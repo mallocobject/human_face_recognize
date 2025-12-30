@@ -9,9 +9,8 @@ find_package(OpenCV REQUIRED)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-include_directories(/usr/include/eigen3)
+include_directories(/usr/include/eigen3/)
 
-# add_executable(HFR ECA_decompose.cpp)
-add_executable(RP read_img.cpp)
+add_executable(HFR main.cpp image_reader.cpp)
 
-target_link_libraries(RP ${OpenCV_LIBS})
+target_link_libraries(HFR ${OpenCV_LIBS})
