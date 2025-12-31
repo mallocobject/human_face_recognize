@@ -51,6 +51,11 @@ class ImageReader
     {
         return labels_.size();
     }
+
+    int samples_per_person() const
+    {
+        return num_train_per_person_;
+    }
 };
 
 #endif

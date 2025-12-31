@@ -16,7 +16,7 @@ void PCAUseSVD()
         SHOW(pca_svd.U().col(i), std::to_string(pca_svd.eigenValueVector()(i)));
     }
     pca_svd.setEncodedTrain(pca_svd.encodeAll(image_reader.getTrainSet()));
-    int ret = pca_svd.calc(pca_svd.encodeAll(image_reader.getTestSet()));
+    int ret = pca_svd.calc(pca_svd.encodeAll(image_reader.getTestSet()), image_reader.samples_per_person());
     std::cout << "result:" << ret << '/' << image_reader.category() << std::endl;
     SHOW(image_reader.at(0, false));
     SHOW(pca_svd.reconstruct(pca_svd.encode(image_reader.at(0, false))));
@@ -31,7 +31,7 @@ void PCAUseEVD()
     pca_evd.setTruncEigenNum(15);
     SHOW(pca_evd.centerVector());
     pca_evd.setEncodedTrain(pca_evd.encodeAll(image_reader.getTrainSet()));
-    int ret = pca_evd.calc(pca_evd.encodeAll(image_reader.getTestSet()));
+    int ret = pca_evd.calc(pca_evd.encodeAll(image_reader.getTestSet()), image_reader.samples_per_person());
     std::cout << "result:" << ret << '/' << image_reader.category() << std::endl;
     SHOW(image_reader.at(0, false));
     SHOW(pca_evd.reconstruct(pca_evd.encode(image_reader.at(0, false))));

@@ -79,7 +79,7 @@ template <typename VD> class PCA
     }
 
     // return the number of corrent recognization
-    int calc(const Eigen::MatrixXf &matrix)
+    int calc(const Eigen::MatrixXf &matrix, int samples_per_person)
     {
         int corrent_cnt = 0;
 
@@ -87,19 +87,33 @@ template <typename VD> class PCA
         {
             Eigen::VectorXf test = matrix.col(i);
 
-            float min_distance = std::numeric_limits<float>::max();
+            double min_distance = std::numeric_limits<double>::max();
             int predicted_label = -1;
             int min_index = -1;
 
+            double distance = 0;
             for (int j = 0; j < encoded_vectors_.cols(); j++)
             {
-                float distance = (test - encoded_vectors_.col(j)).norm();
+                distance = (test - encoded_vectors_.col(j)).norm();
                 if (distance < min_distance)
                 {
                     min_distance = distance;
-                    predicted_label = j / 10;
-                    min_index = j;
+                    predicted_label = j / samples_per_person;
                 }
+                // distance += (test - encoded_vectors_.col(j)).norm();
+
+                // if ((j + 1) % samples_per_person == 0)
+                // {
+                //     distance /= samples_per_person;
+
+                //     if (distance < min_distance)
+                //     {
+                //         min_distance = distance;
+                //         predicted_label = j / samples_per_person;
+                //     }
+
+                //     distance = 0;
+                // }
             }
 
             if (predicted_label == i)
