@@ -5,7 +5,6 @@
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/src/Core/Matrix.h>
 #include <eigen3/Eigen/src/Core/util/Constants.h>
-#include <opencv2/core/eigen.hpp>
 #include <opencv2/core/hal/interface.h>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/highgui.hpp>
@@ -33,6 +32,8 @@ class ImageReader
 
     Eigen::VectorXf at(int index, bool is_train)
     {
+        assert((is_train && index >= 0 && index < num_train_per_person_ * num_persons_) ||
+               (!is_train && index >= 0 && index < num_test_per_person_ * num_persons_));
         return is_train ? train_dataset_.col(index) : test_dataset_.col(index);
     }
 
@@ -44,6 +45,11 @@ class ImageReader
     Eigen::MatrixXf getTestSet()
     {
         return test_dataset_;
+    }
+
+    int category() const
+    {
+        return labels_.size();
     }
 };
 

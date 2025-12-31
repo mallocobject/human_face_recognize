@@ -1,6 +1,7 @@
 #include "image_reader.h"
 #include "common.h"
 #include <cassert>
+#include <opencv2/core/eigen.hpp>
 #include <sstream>
 
 ImageReader::ImageReader(const char *base_path, int num_persons, int num_train_per_person, int num_test_per_person)

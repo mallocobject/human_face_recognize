@@ -1,30 +1,81 @@
 #ifndef PCA_H
 #define PCA_H
 
+#include <cassert>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/src/Core/Matrix.h>
 #include <eigen3/Eigen/src/Core/util/Constants.h>
+#include <iostream>
 
 template <typename VD> class PCA
 {
   protected:
     Eigen::VectorXf center_vector_;
     Eigen::MatrixXf encoded_vectors_;
-    Eigen::MatrixXf face_space_projector_; // the subset of eigen vectors
-    Eigen::VectorXf eigen_values_;
+    Eigen::MatrixXf U_; // the subset of eigen vectors(Thin)
+    // Eigen::MatrixXf V_; // the position int face space
+    Eigen::VectorXf eigen_value_vector_;
+    int tunc_eigen_num_;
 
   public:
+    Eigen::VectorXf centerVector()
+    {
+        return center_vector_;
+    }
+
+    Eigen::VectorXf eigenValueVector()
+    {
+        return eigen_value_vector_;
+    }
+
+    Eigen::MatrixXf eigenValueDiagonal()
+    {
+        return eigen_value_vector_.asDiagonal();
+    }
+
+    Eigen::MatrixXf U()
+    {
+        return U_;
+    }
+
     void decompose(const Eigen::MatrixXf &matrix)
     {
-        center_vector_.resize(matrix.cols());
-        encoded_vectors_.resize(matrix.rows(), matrix.cols());
+        // center_vector_.resize(matrix.cols());
+        // encoded_vectors_.resize(matrix.rows(), matrix.cols());
 
-        static_cast<VD *>(this)->decompose();
+        static_cast<VD *>(this)->decomposeImpl(matrix);
+    }
+
+    void setTruncEigenNum(int k)
+    {
+        tunc_eigen_num_ = k;
+        assert(k > 0 && k <= eigen_value_vector_.size());
     }
 
     Eigen::VectorXf encode(const Eigen::VectorXf &vector)
     {
-        return face_space_projector_ * vector;
+        int k = tunc_eigen_num_;
+        Eigen::MatrixXf projector = U_.leftCols(k).transpose();
+        return projector * (vector - center_vector_);
+    }
+
+    Eigen::VectorXf reconstruct(const Eigen::VectorXf &encoded)
+    {
+        int k = tunc_eigen_num_;
+        return static_cast<VD *>(this)->reconstructImpl(encoded);
+    }
+
+    void setEncodedTrain(const Eigen::MatrixXf &matrix)
+    {
+        encoded_vectors_ = matrix;
+    }
+
+    Eigen::MatrixXf encodeAll(const Eigen::MatrixXf &matrix)
+    {
+        int k = tunc_eigen_num_;
+        Eigen::MatrixXf projector = U_.leftCols(k).transpose();
+
+        return projector * (matrix.colwise() - center_vector_);
     }
 
     // return the number of corrent recognization
