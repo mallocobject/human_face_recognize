@@ -9,7 +9,7 @@ void PCAUseSVD(int k)
     PCAWithSVD pca_svd;
     pca_svd.decompose(image_reader.getTrainSet());
     pca_svd.setTruncEigenNum(k);
-    SHOW(pca_svd.centerVector());
+    SHOW(pca_svd.centerVector(), "average_face");
     for (int i = 0; i < k; i++)
     {
         SHOW(pca_svd.U().col(i), std::to_string(pca_svd.eigenValueVector()(i)));
@@ -18,8 +18,8 @@ void PCAUseSVD(int k)
     int ret = pca_svd.calc(pca_svd.encodeAll(image_reader.getTestSet()), image_reader.getLabels(),
                            image_reader.samples_per_person());
     std::cout << "result:" << ret << '/' << image_reader.getTestSize() << std::endl;
-    SHOW(image_reader.at(0, false));
-    SHOW(pca_svd.reconstruct(pca_svd.encode(image_reader.at(0, false))));
+    SHOW(image_reader.at(0, false), "origin");
+    SHOW(pca_svd.reconstruct(pca_svd.encode(image_reader.at(0, false))), "reconstruction");
 }
 
 int main(int argc, char *argv[])

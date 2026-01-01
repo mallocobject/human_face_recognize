@@ -9,7 +9,7 @@
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/highgui.hpp>
-#include <string>
+#include <sstream>
 
 class ImageShower
 {
@@ -26,6 +26,11 @@ class ImageShower
         cv::Mat cv_mat, cv_display;
         cv::eigen2cv(eigen_mat, cv_mat);
         cv::normalize(cv_mat, cv_display, 0, 255, cv::NORM_MINMAX, CV_8U);
+
+        std::ostringstream save_path;
+        save_path << "/home/liudan/human_face_recognize/images/" << title << ".png";
+
+        cv::imwrite(save_path.str().data(), cv_display);
         cv::namedWindow(title, cv::WINDOW_NORMAL);
         cv::resizeWindow(title, 800, 600);
 
