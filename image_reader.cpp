@@ -19,7 +19,7 @@ ImageReader::ImageReader(const char *base_path, int num_persons, int num_train_p
 
     train_dataset_.resize(total_pixels, total_train);
     test_dataset_.resize(total_pixels, total_test);
-    labels_.resize(num_persons_);
+    labels_.resize(num_persons_ * num_test_per_person);
 
     generateLabel();
     readTrainSet();
@@ -30,8 +30,16 @@ void ImageReader::generateLabel()
 {
     for (int i = 0; i < num_persons_; i++)
     {
-        labels_(i) = i + 1;
+        for (int j = 0; j < num_test_per_person_; j++)
+        {
+            labels_(i * num_test_per_person_ + j) = i + 1;
+        }
     }
+
+    // for (int i = 0; i < labels_.size(); i++)
+    // {
+    //     std::cout << labels_(i) << std::endl;
+    // }
 }
 
 void ImageReader::readTrainSet()
@@ -43,7 +51,8 @@ void ImageReader::readTrainSet()
         for (int j = 0; j < num_train_per_person_; j++)
         {
             std::ostringstream filename;
-            filename << base_path_ << i + 1 << "/s" << j + 1 << ".bmp";
+            filename << base_path_ << "yaleB0" << i + 1 << "/train/" << j;
+            // std::cout << filename.str() << std::endl;
             cv::Mat img = cv::imread(filename.str(), cv::IMREAD_GRAYSCALE);
             assert(img.rows == ROW_PIXELS && img.cols == COL_PIXELS);
 
@@ -63,17 +72,19 @@ void ImageReader::readTestSet()
 
     for (int i = 0; i < num_persons_; i++)
     {
+        for (int j = 0; j < num_test_per_person_; j++)
+        {
+            std::ostringstream filename;
+            filename << base_path_ << "yaleB0" << i + 1 << "/test/" << j + 30;
+            cv::Mat img = cv::imread(filename.str(), cv::IMREAD_GRAYSCALE);
+            assert(img.rows == ROW_PIXELS && img.cols == COL_PIXELS);
 
-        std::ostringstream filename;
-        filename << base_path_ << i + 1 << "/s11.bmp";
-        cv::Mat img = cv::imread(filename.str(), cv::IMREAD_GRAYSCALE);
-        assert(img.rows == ROW_PIXELS && img.cols == COL_PIXELS);
+            Eigen::Matrix<uchar, ROW_PIXELS, COL_PIXELS, Eigen::RowMajor> eigen_mat;
+            cv::cv2eigen(img, eigen_mat);
 
-        Eigen::Matrix<uchar, ROW_PIXELS, COL_PIXELS, Eigen::RowMajor> eigen_mat;
-        cv::cv2eigen(img, eigen_mat);
+            Eigen::Matrix<float, ROW_PIXELS, COL_PIXELS, Eigen::RowMajor> float_img = eigen_mat.cast<float>();
 
-        Eigen::Matrix<float, ROW_PIXELS, COL_PIXELS, Eigen::RowMajor> float_img = eigen_mat.cast<float>();
-
-        test_dataset_.col(i) = float_img.reshaped<Eigen::ColMajor>(total_pixels, 1);
+            test_dataset_.col(i * num_test_per_person_ + j) = float_img.reshaped<Eigen::ColMajor>(total_pixels, 1);
+        }
     }
 }

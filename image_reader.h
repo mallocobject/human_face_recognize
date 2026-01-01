@@ -26,9 +26,6 @@ class ImageReader
 
   public:
     ImageReader(const char *base_path, int num_persons, int num_train_per_person, int num_test_per_person);
-    void readTrainSet();
-    void readTestSet();
-    void generateLabel();
 
     Eigen::VectorXf at(int index, bool is_train)
     {
@@ -47,6 +44,11 @@ class ImageReader
         return test_dataset_;
     }
 
+    Eigen::VectorXi getLabels()
+    {
+        return labels_;
+    }
+
     int category() const
     {
         return labels_.size();
@@ -56,6 +58,16 @@ class ImageReader
     {
         return num_train_per_person_;
     }
+
+    int getTestSize() const
+    {
+        return test_dataset_.cols();
+    }
+
+  private:
+    void readTrainSet();
+    void readTestSet();
+    void generateLabel();
 };
 
 #endif

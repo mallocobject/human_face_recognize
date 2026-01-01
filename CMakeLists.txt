@@ -15,4 +15,6 @@ aux_source_directory(. SRC)
 
 add_executable(HFR main.cpp ${SRC})
 
+# add_executable(HFR show.cpp)
+
 target_link_libraries(HFR ${OpenCV_LIBS})
