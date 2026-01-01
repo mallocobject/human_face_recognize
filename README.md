@@ -6,16 +6,19 @@
 #### 1. 构造数据矩阵 
 假设有 M 张人脸图像，每张图像表示为长度为 d 的列向量 $\mathbf{x}_i \in \mathbb{R}^d$
 首先计算平均脸（Mean Face）:
+
 $$
 \boldsymbol{\Psi} = \frac{1}{M} \sum_{i=1}^{M} \mathbf{x}_i
 $$
 
 计算每张脸与平均脸的偏差（去中心化）:
+
 $$
 \boldsymbol{\Phi}_i = \mathbf{x}_i - \boldsymbol{\Psi}
 $$
 
 将这些偏差向量作为列构造数据矩阵 A:
+
 $$
 A = [ \boldsymbol{\Phi}_1, \boldsymbol{\Phi}_2, \dots, \boldsymbol{\Phi}_M ] \in \mathbb{R}^{d \times M}
 $$
@@ -23,32 +26,38 @@ $$
 
 #### 2. 协方差矩阵
 样本的协方差矩阵 C 可以表示为数据矩阵 A 与其转置的乘积:
+
 $$
 C = \frac{1}{M-1} \sum_{i=1}^{M} \boldsymbol{\Phi}_i \boldsymbol{\Phi}_i^T = \frac{1}{M-1} A A^T \in \mathbb{R}^{d \times d}
 $$
 
 #### 3. 特征值分解
 对协方差矩阵 C 进行特征值分解:
+
 $$
 C \mathbf{u}_l = \lambda_l \mathbf{u}_l
 $$
 
 由于 d 通常很大，我们通过求解 $A^T A$ 的特征向量 $\mathbf{v}_l$ 来简化计算:
+
 $$
 (A^T A) \mathbf{v}_l = \mu_l \mathbf{v}_l
 $$
 由此推导出 C 的特征向量（特征脸）:
+
 $$
 \mathbf{u}_l = A \mathbf{v}_l
 $$
 
 选取前 k 个最大特征值对应的特征向量构成特征空间基矩阵 $U_k$:
+
 $$
 U_k = [ \mathbf{u}_1, \mathbf{u}_2, \dots, \mathbf{u}_k ] \in \mathbb{R}^{d \times k}
 $$
 
 #### 4. 投影与降维
 对于任意去中心化后的图像向量 $\boldsymbol{\Phi}$，其在特征空间中的投影（即低维表示）通过投影算子的转置相关部分计算:
+
 $$
 \boldsymbol{\Omega} = U_k^T \boldsymbol{\Phi}
 $$
